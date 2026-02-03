@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import path from 'path';
 
 // Load environment variables
 dotenv.config();
@@ -8,6 +7,7 @@ dotenv.config();
 // Import utilities and middleware
 import logger from './src/utils/logger.js';
 import corsMiddleware from './src/utils/cors.js';
+import database from './src/config/database.js';
 import { 
   globalErrorHandler, 
   AppError, 
@@ -39,7 +39,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', async (req: Request, res: Response) => {  
   res.status(200).json({
     status: 'success',
     message: 'Server is running',
@@ -79,28 +79,55 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`, {
-    port: PORT,
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString()
-  });
-});
 
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received. Shutting down gracefully');
-  server.close(() => {
-    logger.info('Process terminated');
-    process.exit(0);
-  });
-});
+// Initialize database connection and start server
+const startServer = async () => {
+  try {
+    // Connect to database
+    await database.connect();
+    
+    // Start the server
+    const server = app.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`, {
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString()
+      });
+    });
 
-process.on('SIGINT', () => {
-  logger.info('SIGINT received. Shutting down gracefully');
-  server.close(() => {
-    logger.info('Process terminated');
-    process.exit(0);
-  });
-});
+    // Graceful shutdown
+    const gracefulShutdown = async (signal: string) => {
+      logger.info(`${signal} received. Shutting down gracefully`);
+      
+      server.close(async () => {
+        try {
+          await database.disconnect();
+          logger.info('Process terminated');
+          process.exit(0);
+        } catch (error) {
+          logger.error('Error during shutdown', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString()
+          });
+          process.exit(1);
+        }
+      });
+    };
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  } catch (error) {
+    logger.error('Failed to start server', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
+    process.exit(1);
+  }
+};
+
+// Start the application
+startServer();
 
 export default app;
