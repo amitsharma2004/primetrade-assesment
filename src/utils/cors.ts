@@ -9,8 +9,10 @@ const corsOptions: cors.CorsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:5173', // Vite default port
+      'http://localhost:5174', // Alternative Vite port
       'http://127.0.0.1:3000',
       'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
       // Add your production domains here
       ...(process.env.ALLOWED_ORIGINS?.split(',') || [])
     ];

@@ -5,8 +5,8 @@ import { authenticate, authRateLimit } from './auth.middleware.js';
 const router = Router();
 
 // Public routes
-router.post('/register', authRateLimit(5, 15 * 60 * 1000), authController.register);
-router.post('/login', authRateLimit(5, 15 * 60 * 1000), authController.login);
+router.post('/register', authRateLimit(10, 15 * 60 * 1000), authController.register);
+router.post('/login', authRateLimit(10, 15 * 60 * 1000), authController.login);
 
 // Protected routes
 router.use(authenticate);
