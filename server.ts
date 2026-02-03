@@ -8,6 +8,7 @@ dotenv.config();
 import logger from './src/utils/logger.js';
 import corsMiddleware from './src/utils/cors.js';
 import database from './src/config/database.js';
+import authRoutes from './src/module/auth/auth.routes.js';
 import { 
   globalErrorHandler, 
   AppError, 
@@ -39,12 +40,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Health check endpoint
-app.get('/health', async (req: Request, res: Response) => {  
+app.get('/health', async (req: Request, res: Response) => {
+  const dbStatus = await database.getConnectionStatus();
+  
   res.status(200).json({
     status: 'success',
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    database: dbStatus
   });
 });
 
@@ -56,6 +60,9 @@ app.get('/api', (req: Request, res: Response) => {
     version: '1.0.0'
   });
 });
+
+// Auth routes
+app.use('/api/auth', authRoutes);
 
 // Example protected route (you can add your authentication middleware here)
 app.get('/api/protected', (req: Request, res: Response) => {
@@ -83,14 +90,24 @@ const PORT = process.env.PORT || 3000;
 // Initialize database connection and start server
 const startServer = async () => {
   try {
-    // Connect to database
-    await database.connect();
+    // Try to connect to database
+    try {
+      await database.connect();
+      await database.createIndexes();
+      logger.info('Database connected successfully');
+    } catch (dbError) {
+      logger.warn('Database connection failed, starting server without database', {
+        error: dbError instanceof Error ? dbError.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
     
     // Start the server
     const server = app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`, {
         port: PORT,
         environment: process.env.NODE_ENV || 'development',
+        database: database.isConnected() ? 'connected' : 'disconnected',
         timestamp: new Date().toISOString()
       });
     });
@@ -101,7 +118,9 @@ const startServer = async () => {
       
       server.close(async () => {
         try {
-          await database.disconnect();
+          if (database.isConnected()) {
+            await database.disconnect();
+          }
           logger.info('Process terminated');
           process.exit(0);
         } catch (error) {
