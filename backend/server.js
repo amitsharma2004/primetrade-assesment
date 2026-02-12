@@ -14,7 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes will be added here
+// Routes
+app.use('/api/auth', require('./routes/auth'));
 
 // Error handler middleware (must be last)
 app.use(errorHandler);
