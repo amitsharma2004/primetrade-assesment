@@ -9,16 +9,33 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Middleware
+// Global Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/tasks', require('./routes/tasks'));
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'MERN Task Manager API',
+    version: '1.0.0'
+  });
+});
 
-// Error handler middleware (must be last)
+// API v1 Routes
+app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/tasks', require('./routes/tasks'));
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found'
+  });
+});
+
+// Global Error Handler (must be last)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
