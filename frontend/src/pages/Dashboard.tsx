@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
-import { Task, TaskFormData } from '../types/task';
+import type { Task, TaskFormData } from '../types/task';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -65,41 +65,51 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '900px', margin: '20px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h1>Dashboard</h1>
-          <p>Welcome, {user?.name}! ({user?.role})</p>
+    <div className="page-container" style={{ minHeight: '100vh', padding: '20px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div className="card" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '24px' 
+        }}>
+          <div>
+            <h1 style={{ marginBottom: '8px', fontSize: '32px' }}>Dashboard</h1>
+            <p style={{ color: 'var(--text-secondary)' }}>
+              Welcome, <strong>{user?.name}</strong> ({user?.role})
+            </p>
+          </div>
+          <button onClick={handleLogout} style={{ 
+            backgroundColor: 'var(--error)',
+            padding: '10px 20px'
+          }}>
+            Logout
+          </button>
         </div>
-        <button onClick={handleLogout} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-          Logout
-        </button>
+
+        {error && <div className="alert alert-error">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
+
+        <div style={{ marginBottom: '24px' }}>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            style={{ 
+              backgroundColor: showForm ? 'var(--text-secondary)' : 'var(--accent)',
+              padding: '12px 24px'
+            }}
+          >
+            {showForm ? '✕ Cancel' : '+ Create New Task'}
+          </button>
+        </div>
+
+        {showForm && (
+          <div style={{ marginBottom: '24px' }}>
+            <TaskForm onSubmit={handleCreateTask} onCancel={() => setShowForm(false)} />
+          </div>
+        )}
+
+        <TaskList tasks={tasks} onDelete={handleDeleteTask} loading={loading} />
       </div>
-
-      {error && (
-        <div style={{ padding: '10px', backgroundColor: '#ffebee', color: '#c62828', marginBottom: '10px' }}>
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div style={{ padding: '10px', backgroundColor: '#e8f5e9', color: '#2e7d32', marginBottom: '10px' }}>
-          {success}
-        </div>
-      )}
-
-      <div style={{ marginBottom: '20px' }}>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          style={{ padding: '10px 20px', cursor: 'pointer', backgroundColor: '#2196f3', color: 'white', border: 'none' }}
-        >
-          {showForm ? 'Hide Form' : 'Create New Task'}
-        </button>
-      </div>
-
-      {showForm && <TaskForm onSubmit={handleCreateTask} onCancel={() => setShowForm(false)} />}
-
-      <TaskList tasks={tasks} onDelete={handleDeleteTask} loading={loading} />
     </div>
   );
 };

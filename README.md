@@ -82,7 +82,7 @@ npm install
 
 3. Create `.env` file:
 ```env
-REACT_APP_API_URL=http://localhost:5000/api/v1
+VITE_API_URL=http://localhost:5000/api/v1
 ```
 
 4. Start the development server:
@@ -126,7 +126,7 @@ docker-compose down
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| REACT_APP_API_URL | Backend API URL | http://localhost:5000/api/v1 |
+| VITE_API_URL | Backend API URL | http://localhost:5000/api/v1 |
 
 ## API Endpoints
 
@@ -360,6 +360,26 @@ npm run build
 ```bash
 docker-compose up -d
 ```
+
+## Production Deployment
+
+### Quick Deploy
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+**Backend (Render):**
+- Deploy from GitHub
+- Add environment variables (see [ENV_VARIABLES.md](ENV_VARIABLES.md))
+- Use MongoDB Atlas for database
+
+**Frontend (Vercel/Netlify):**
+- Deploy from GitHub
+- Set `VITE_API_URL` to your Render backend URL
+- Automatic HTTPS and CDN
+
+### Environment Variables
+
+See [ENV_VARIABLES.md](ENV_VARIABLES.md) for complete list of required variables.
 
 ## Contributing
 

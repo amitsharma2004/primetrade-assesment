@@ -6,16 +6,6 @@ export interface User {
   createdAt?: string;
 }
 
-export interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-  register: (userData: RegisterData) => Promise<AuthResponse>;
-  login: (credentials: LoginData) => Promise<AuthResponse>;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
-
 export interface RegisterData {
   name: string;
   email: string;
@@ -31,4 +21,14 @@ export interface LoginData {
 export interface AuthResponse {
   success: boolean;
   error?: string;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  register: (userData: RegisterData) => Promise<AuthResponse>;
+  login: (credentials: LoginData) => Promise<AuthResponse>;
+  logout: () => void;
+  isAuthenticated: boolean;
 }

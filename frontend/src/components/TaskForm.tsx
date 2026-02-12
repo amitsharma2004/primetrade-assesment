@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TaskFormData } from '../types/task';
+import type { TaskFormData } from '../types/task';
 
 interface TaskFormProps {
   onSubmit: (task: TaskFormData) => Promise<void>;
@@ -27,66 +27,82 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSubmit, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ddd' }}>
-      <h3>Create New Task</h3>
+    <div className="card">
+      <h3 style={{ marginBottom: '20px', fontSize: '20px' }}>Create New Task</h3>
       
-      <div style={{ marginBottom: '10px' }}>
-        <label>Title:</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-        />
-      </div>
-      
-      <div style={{ marginBottom: '10px' }}>
-        <label>Description:</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginTop: '5px', minHeight: '80px' }}
-        />
-      </div>
-      
-      <div style={{ marginBottom: '10px' }}>
-        <label>Status:</label>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as any)}
-          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-        >
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-        </select>
-      </div>
-      
-      <div style={{ marginBottom: '10px' }}>
-        <label>Priority:</label>
-        <select
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as any)}
-          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      </div>
-      
-      <div style={{ display: 'flex', gap: '10px' }}>
-        <button type="submit" disabled={loading} style={{ padding: '8px 16px', cursor: 'pointer' }}>
-          {loading ? 'Creating...' : 'Create Task'}
-        </button>
-        {onCancel && (
-          <button type="button" onClick={onCancel} style={{ padding: '8px 16px', cursor: 'pointer' }}>
-            Cancel
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            placeholder="Enter task title"
+          />
+        </div>
+        
+        <div className="form-group">
+          <label>Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter task description (optional)"
+            style={{ minHeight: '100px', resize: 'vertical' }}
+          />
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="form-group">
+            <label>Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+            >
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          
+          <div className="form-group">
+            <label>Priority</label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as any)}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+          <button 
+            type="submit" 
+            disabled={loading}
+            className={loading ? 'loading' : ''}
+            style={{ flex: 1 }}
+          >
+            {loading ? 'Creating...' : 'Create Task'}
           </button>
-        )}
-      </div>
-    </form>
+          {onCancel && (
+            <button 
+              type="button" 
+              onClick={onCancel}
+              style={{ 
+                flex: 1,
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-primary)'
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 };
 

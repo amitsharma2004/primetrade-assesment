@@ -29,57 +29,69 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h2>Register</h2>
-      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-      
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
+    <div className="page-container" style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      padding: '20px'
+    }}>
+      <div className="card" style={{ maxWidth: '400px', width: '100%' }}>
+        <h2 style={{ marginBottom: '24px', textAlign: 'center', fontSize: '28px' }}>
+          Create Account
+        </h2>
         
-        <div style={{ marginBottom: '15px' }}>
-          <label>Email:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
+        {error && <div className="alert alert-error">{error}</div>}
         
-        <div style={{ marginBottom: '15px' }}>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              placeholder="Enter your name"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="Enter your email"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              placeholder="At least 6 characters"
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ width: '100%', marginTop: '8px' }}
+            className={loading ? 'loading' : ''}
+          >
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
         
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ width: '100%', padding: '10px', cursor: 'pointer' }}
-        >
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-      
-      <p style={{ marginTop: '15px', textAlign: 'center' }}>
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
+        <p style={{ marginTop: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
+      </div>
     </div>
   );
 };
