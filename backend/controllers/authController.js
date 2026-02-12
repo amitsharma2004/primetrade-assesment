@@ -4,8 +4,12 @@ const { validationResult } = require('express-validator');
 
 const register = async (req, res, next) => {
   try {
+    console.log('Register controller called');
+    console.log('Request body:', req.body);
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -13,9 +17,11 @@ const register = async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log('User already exists');
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    console.log('Creating user...');
     const user = await User.create({
       name,
       email,
@@ -23,8 +29,10 @@ const register = async (req, res, next) => {
       role: role || 'user'
     });
 
+    console.log('User created, generating token...');
     const token = generateToken(user._id);
 
+    console.log('Sending response...');
     res.status(201).json({
       success: true,
       token,
@@ -36,6 +44,7 @@ const register = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.error('Register error:', error);
     next(error);
   }
 };

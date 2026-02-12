@@ -5,6 +5,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const authRouter = require ('./routes/auth');
 
 const app = express();
 
@@ -29,8 +30,15 @@ app.get('/', (req, res) => {
   });
 });
 
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Body:', req.body);
+  next();
+});
+
 // API v1 Routes
-app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/tasks', require('./routes/tasks'));
 
 // 404 Handler

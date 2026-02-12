@@ -2,6 +2,9 @@ const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
 
+  // Log error for debugging
+  console.error('Error:', err);
+
   // Mongoose CastError (invalid ObjectId)
   if (err.name === 'CastError') {
     error.message = 'Resource not found';
